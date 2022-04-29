@@ -1,6 +1,6 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
+ * Alfonso Massimo, Canavate Chloé, Franke Patrick
  * All Rights Reserved
  * UNPUBLISHED, LICENSED SOFTWARE.
  *
