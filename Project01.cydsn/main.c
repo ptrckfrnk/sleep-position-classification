@@ -10,17 +10,27 @@
  * ========================================
 */
 #include "project.h"
+#include <stdio.h>
 
 int main(void)
 {
     CyGlobalIntEnable; /* Enable global interrupts. */
 
     /* Place your initialization/startup code here (e.g. MyInst_Start()) */
+    UART_BT_Start();    
+    
+    UART_BT_PutString("UART BT: Communication started.\r\n");    
+    uint8_t count = 0;
+    char buffer[50];
 
     for(;;)
     {
         /* Place your application code here. */
-        //Maximum is the best name
+        
+        sprintf(buffer, "Count = %d\r\n", count);
+        UART_BT_PutString(buffer);
+        count++;
+        CyDelay(1000);
     }
 }
 
