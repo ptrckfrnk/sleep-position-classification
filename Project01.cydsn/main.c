@@ -28,6 +28,7 @@ int main(void)
     
     // Bluetooth Communication Check
     UART_BT_PutString("UART BT: Communication started.\r\n");
+
     
     // String to print out messages on the UART
     char message[50] = {'\0'};
