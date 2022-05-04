@@ -22,8 +22,12 @@ int main(void)
     
     I2C_Peripheral_Start();
     UART_Start();
+    UART_BT_Start();
     
     CyDelay(5); //"The boot procedure is complete about 5 ms after device power-up."
+    
+    // Bluetooth Communication Check
+    UART_BT_PutString("UART BT: Communication started.\r\n");
     
     // String to print out messages on the UART
     char message[50] = {'\0'};
@@ -158,6 +162,11 @@ int main(void)
     int16_t y_acc_2;
     int16_t z_acc_2;
     
+    
+    
+    char buffer[50];
+
+    
     for(;;)
     {
         CyDelay(100);
@@ -176,6 +185,8 @@ int main(void)
             x_acc_1 = (int16)(X_acc_1[0] | (X_acc_1[1] << 8)) >> 6;
             sprintf(message, "X acc 1 (0x18): %d\r\n", x_acc_1);
             UART_PutString(message);
+            sprintf(buffer, "X acc 1 (0x18): %d\r\n", x_acc_1);
+            UART_BT_PutString(buffer);
         }
         
         
