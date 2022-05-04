@@ -16,7 +16,7 @@
     /**
     *   \brief 7-bit I2C address of the slave device.
     */
-    #define LIS3DH_DEVICE_ADDRESS 0x18
+    #define LIS3DH_DEVICE_ADDRESS 0x19
 
     /**
     *   \brief Address of the WHO AM I register
