@@ -14,9 +14,14 @@
     #define __LIS3DH_H
 
     /**
-    *   \brief 7-bit I2C address of the slave device.
+    *   \brief 7-bit I2C address of the 1st accelerometer
     */
-    #define LIS3DH_DEVICE_ADDRESS 0x19
+    #define LIS3DH_1_DEVICE_ADDRESS 0x18
+    
+    /**
+    *   \brief 7-bit I2C address of the 2nd accelerometer
+    */
+    #define LIS3DH_2_DEVICE_ADDRESS 0x19
 
     /**
     *   \brief Address of the WHO AM I register
@@ -73,6 +78,18 @@
     
     #define LIS3DH_OUT_ADC_3H 0x0D
     ////////////////////////////////////////////////
+    
+    #define LIS3DH_OUT_X_L 0x28
+    
+    #define LIS3DH_OUT_X_H 0x29
+    
+    #define LIS3DH_OUT_Y_L 0x2A
+    
+    #define LIS3DH_OUT_Y_H 0x2B
+    
+    #define LIS3DH_OUT_Z_L 0x2C
+    
+    #define LIS3DH_OUT_Z_H 0x2D
     
 #endif
 
