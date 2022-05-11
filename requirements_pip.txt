@@ -1,0 +1,3 @@
+certifi==2021.10.8
+sip==4.19.13
+wincertstore==0.2
