@@ -83,7 +83,7 @@ class SerialWorker(QRunnable):
     @pyqtSlot()
     def run(self):
         """!
-        @brief Estabilish connection with desired serial port.
+        @brief Establish connection with desired serial port.
         """
         global CONN_STATUS
 
@@ -101,55 +101,52 @@ class SerialWorker(QRunnable):
                 time.sleep(0.01)
 
 
-    @pyqtSlot() # ---------------------------
+    @pyqtSlot()
     def sample(self):
         """!
         @brief Sample data from desired serial port
         """
-        global CONN_STATUS
 
-        if not CONN_STATUS:
+        if CONN_STATUS:
             try:
-                self.port = serial.Serial(port=self.port_name, baudrate=self.baudrate,
-                                        write_timeout=0, timeout=2)
-                if self.port.is_open:
-                    CONN_STATUS = True
-                    self.signals.status.emit(self.port_name, 1)
+                # Initialize list for incoming data
+                data = []
 
-                    data = []
-                    t_end = time.time() + 10
-                    while time.time() < t_end:
-                        data.append(self.port.read())
+                # Sample for 18 minutes
+                t_end = time.time() + 18*60
 
-                    print(data)
+                while time.time() < t_end:
+                    data.append(self.port.read())
 
-                    # textfile = open("output.txt", "w")
-                    # for element in data:
-                    #     textfile.write(element + "\n")
-                    # textfile.close()
+                # Print data for debugging
+                print(data)
 
-                    # field names
-                    fields = ['x1', 'y1', 'z1', 'x2', 'y2', 'z2']
+                # Data transformation for better reading
+                # tbd
 
-                    # data rows of csv file
-                    rows = [ ['0', '250', '250', '250', '0', '250'],
-                             ['2', '251', '245', '251', '5', '247'],
-                             ['4', '250', '247', '252', '7', '243']]
+                # data rows of csv file (for testing, delete later)
+                rows = [ ['0', '250', '250', '250', '0', '250'],
+                         ['2', '251', '245', '251', '5', '247'],
+                         ['4', '250', '247', '252', '7', '243']]
 
-                    with open('bluetooth_data.csv', 'w') as f:
+                # Saving data as CSV file
+                labels = ['x1', 'y1', 'z1', 'x2', 'y2', 'z2']
 
-                        # using csv.writer method from CSV package
-                        write = csv.writer(f)
+                with open('bluetooth_data.csv', 'w') as f:
 
-                        write.writerow(fields)
-                        write.writerows(rows)
+                    # using csv.writer method from CSV package
+                    write = csv.writer(f)
 
-                    time.sleep(0.01)
+                    write.writerow(labels)
+                    write.writerows(rows)
+
+                time.sleep(0.01)
+
             except serial.SerialException:
-                logging.info("Error with port {}.".format(self.port_name))
+                logging.info("Error with reading data from port {}.".format(self.port_name))
                 self.signals.status.emit(self.port_name, 0)
                 time.sleep(0.01)
-    # -----------------------------------
+
 
     @pyqtSlot()
     def send(self, char):
@@ -212,12 +209,10 @@ class MainWindow(QMainWindow):
         """!
         @brief Set up the graphical interface structure.
         """
-        # layout
-
+        # Layout
         label1 = QLabel('Choose port for reading:')
-        label2 = QLabel('Start and stop reading of data:')
-        button1 = QPushButton('Start')
-        button2 = QPushButton('Close window')
+        label2 = QLabel('Start sampling data (for 18 mins):')
+        button_start = QPushButton('Start')
         label3 = QLabel('Accelerometer data:')
 
         layout = QVBoxLayout()
@@ -225,8 +220,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.com_list_widget)
         layout.addWidget(self.conn_btn)
         layout.addWidget(label2)
-        layout.addWidget(button1)
-        layout.addWidget(button2)
+        layout.addWidget(button_start)
         layout.addWidget(label3)
         widget = QWidget()
         widget.setLayout(layout)
