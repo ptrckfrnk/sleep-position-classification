@@ -41,61 +41,61 @@ int main(void)
                                         LIS3DH_CTRL_REG1,
                                         &control_reg_acc_2);
     
-    if( error_1 == NO_ERROR ) {
-        sprintf(message, "CTRL register 1 value: 0x%02X\r\n", control_reg_acc_1);
-        UART_BT_PutString(message);
-    }
-    else {
-        UART_BT_PutString("I2C error while reading LIS3DH_CTRL_REG1\r\n");
-    }
-    
-    if( error_2 == NO_ERROR ) {
-        sprintf(message, "CTRL register 1 value: 0x%02X\r\n", control_reg_acc_2);
-        UART_BT_PutString(message);
-    }
-    else {
-        UART_BT_PutString("I2C error while reading LIS3DH_CTRL_REG1\r\n");
-    }
-    
-    UART_BT_PutString("\r\nWriting new values...\r\n");
-    
-    if (control_reg_acc_1 != LIS3DH_NORMAL_MODE_CTRL_REG1)
-    {
-        control_reg_acc_1 = LIS3DH_NORMAL_MODE_CTRL_REG1;
-        
-        error_1 = I2C_Peripheral_WriteRegister(LIS3DH_1_DEVICE_ADDRESS,
-                                               LIS3DH_CTRL_REG1,
-                                               control_reg_acc_1);
-        
-        if (error_1 == NO_ERROR)
-        {
-            sprintf(message, "\r\nCTRL register 1 successfully written as: 0x%02X\r\n", control_reg_acc_1);
-            UART_BT_PutString(message);
-        }
-        else
-        {
-            UART_BT_PutString("\r\nError occured during I2C comm to set control register 1\r\n");
-        }
-    }
-    
-    if (control_reg_acc_2 != LIS3DH_NORMAL_MODE_CTRL_REG1)
-    {
-        control_reg_acc_2 = LIS3DH_NORMAL_MODE_CTRL_REG1;
-        
-        error_2 = I2C_Peripheral_WriteRegister(LIS3DH_2_DEVICE_ADDRESS,
-                                               LIS3DH_CTRL_REG1,
-                                               control_reg_acc_2);
-        
-        if (error_2 == NO_ERROR)
-        {
-            sprintf(message, "\r\nCTRL register 1 successfully written as: 0x%02X\r\n", control_reg_acc_2);
-            UART_BT_PutString(message);
-        }
-        else
-        {
-            UART_BT_PutString("\r\nError occured during I2C comm to set control register 1\r\n");
-        }
-    }
+//    if( error_1 == NO_ERROR ) {
+//        sprintf(message, "CTRL register 1 value: 0x%02X\r\n", control_reg_acc_1);
+//        UART_BT_PutString(message);
+//    }
+//    else {
+//        UART_BT_PutString("I2C error while reading LIS3DH_CTRL_REG1\r\n");
+//    }
+//    
+//    if( error_2 == NO_ERROR ) {
+//        sprintf(message, "CTRL register 1 value: 0x%02X\r\n", control_reg_acc_2);
+//        UART_BT_PutString(message);
+//    }
+//    else {
+//        UART_BT_PutString("I2C error while reading LIS3DH_CTRL_REG1\r\n");
+//    }
+//    
+//    UART_BT_PutString("\r\nWriting new values...\r\n");
+//    
+//    if (control_reg_acc_1 != LIS3DH_NORMAL_MODE_CTRL_REG1)
+//    {
+//        control_reg_acc_1 = LIS3DH_NORMAL_MODE_CTRL_REG1;
+//        
+//        error_1 = I2C_Peripheral_WriteRegister(LIS3DH_1_DEVICE_ADDRESS,
+//                                               LIS3DH_CTRL_REG1,
+//                                               control_reg_acc_1);
+//        
+//        if (error_1 == NO_ERROR)
+//        {
+//            sprintf(message, "\r\nCTRL register 1 successfully written as: 0x%02X\r\n", control_reg_acc_1);
+//            UART_BT_PutString(message);
+//        }
+//        else
+//        {
+//            UART_BT_PutString("\r\nError occured during I2C comm to set control register 1\r\n");
+//        }
+//    }
+//    
+//    if (control_reg_acc_2 != LIS3DH_NORMAL_MODE_CTRL_REG1)
+//    {
+//        control_reg_acc_2 = LIS3DH_NORMAL_MODE_CTRL_REG1;
+//        
+//        error_2 = I2C_Peripheral_WriteRegister(LIS3DH_2_DEVICE_ADDRESS,
+//                                               LIS3DH_CTRL_REG1,
+//                                               control_reg_acc_2);
+//        
+//        if (error_2 == NO_ERROR)
+//        {
+//            sprintf(message, "\r\nCTRL register 1 successfully written as: 0x%02X\r\n", control_reg_acc_2);
+//            UART_BT_PutString(message);
+//        }
+//        else
+//        {
+//            UART_BT_PutString("\r\nError occured during I2C comm to set control register 1\r\n");
+//        }
+//    }
     
     // Reading and writing control register 5 and FIFO control register
     // CTRL REG 5
@@ -255,36 +255,53 @@ int main(void)
     int16_t register_count = 192;
     uint8_t Acc1_data[192];
     uint8_t fifo_full;
+//    uint8_t counter = 1;
     
     for(;;)
     {
-        CyDelay(1000);
+//        CyDelay(1000);
+//        sprintf(message, "%d", counter);
+//        UART_BT_PutString(message);
+//        counter++;
+
+        
         ErrorCode error = I2C_Peripheral_ReadRegister(LIS3DH_2_DEVICE_ADDRESS,
                                                       LIS3DH_FIFO_SRC_REG,
                                                       &fifo_full);
         
         if (error == NO_ERROR)
         {
-            sprintf(message, "fifo_full: %d \r\n\n", fifo_full);
-            UART_BT_PutString(message);
+            //sprintf(message, "fifo_full: %d \r\n\n", fifo_full);
+            //UART_BT_PutString(message);
             
             uint8_t OVRN_FIFO = (fifo_full & 0x40) >> 6;
-            sprintf(message, "OVRN_FIFO: %d \r\n\n", OVRN_FIFO);
-            UART_BT_PutString(message);
+            //sprintf(message, "OVRN_FIFO: %d \r\n\n", OVRN_FIFO);
+            //UART_BT_PutString(message);
             
             if (OVRN_FIFO == 0x01)
             {
-                I2C_Peripheral_ReadRegisterMulti(LIS3DH_1_DEVICE_ADDRESS,
+                I2C_Peripheral_ReadRegisterMulti(LIS3DH_2_DEVICE_ADDRESS,
                                                  LIS3DH_OUT_X_L,
                                                  register_count,
                                                  Acc1_data);
+                
+                
         
-                int16_t test = (int16)(Acc1_data[6] | (Acc1_data[7] << 8)) >> 6;
+                int16_t test = (int16)(Acc1_data[0] | (Acc1_data[1] << 8)) >> 6;
                 sprintf(message, "Accelerometer 1: %d \r\n\n", test);
                 UART_BT_PutString(message);
+                
+                error_2 = I2C_Peripheral_WriteRegister(LIS3DH_2_DEVICE_ADDRESS,
+                                                       LIS3DH_FIFO_CTRL_REG,
+                                                       LIS3DH_BYPASS_MODE);
+                
+                error_2 = I2C_Peripheral_WriteRegister(LIS3DH_2_DEVICE_ADDRESS,
+                                                       LIS3DH_FIFO_CTRL_REG,
+                                                       fifo_control_reg_acc_2);
             }
         }
         
+        // END FIFO TEST
                                                      
         
         // First accelerometer

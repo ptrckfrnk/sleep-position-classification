@@ -74,6 +74,11 @@
     #define LIS3DH_NORMAL_MODE_CTRL_REG5 0x40
     
     /**
+    *   \brief Hex value to set FIFO mode to the accelerator
+    */
+    #define LIS3DH_BYPASS_MODE 0x00
+    
+    /**
     *   \brief Hex value to set normal mode (powered off)
     **/
     #define LIS3DH_FIFO_MODE_CTRL_REG_MODE 0x40
