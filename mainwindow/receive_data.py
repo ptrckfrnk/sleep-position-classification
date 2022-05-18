@@ -95,6 +95,33 @@ class SerialWorker(QRunnable):
                     CONN_STATUS = True
                     self.signals.status.emit(self.port_name, 1)
                     time.sleep(0.01)
+
+                    # Initialize list for incoming data
+                    data = []
+
+                    # Sample for 18 minutes
+                    t_end = time.time() + 200
+
+                    print("Start sampling.")
+
+                    line = ''
+
+                    while time.time() < t_end:
+
+                        read = str(self.port.read())
+                        read = read[2]
+
+                        if (read != 'E'):
+                            line += read
+
+                        if (read == 'E'):
+                            print(line)
+                            line = ''
+
+                    print("End of sampling.")
+                    # Print data for debugging
+                    #print(data)
+
             except serial.SerialException:
                 logging.info("Error with port {}.".format(self.port_name))
                 self.signals.status.emit(self.port_name, 0)
@@ -210,18 +237,25 @@ class MainWindow(QMainWindow):
         @brief Set up the graphical interface structure.
         """
         # Layout
-        label1 = QLabel('Choose port for reading:')
-        label2 = QLabel('Start sampling data (for 18 mins):')
+        label_choose = QLabel('Choose port for reading:')
+        label_sample = QLabel('Start sampling data (for 18 mins):')
         button_start = QPushButton('Start')
-        label3 = QLabel('Accelerometer data:')
+
+        button_start = QPushButton(
+            text=('Start'),
+            checkable=False, # check if this is the right way to do it
+            #toggled=self.on_toggle
+        )
+
+        label_data = QLabel('Accelerometer data:')
 
         layout = QVBoxLayout()
-        layout.addWidget(label1)
+        layout.addWidget(label_choose)
         layout.addWidget(self.com_list_widget)
         layout.addWidget(self.conn_btn)
-        layout.addWidget(label2)
+        layout.addWidget(label_sample)
         layout.addWidget(button_start)
-        layout.addWidget(label3)
+        layout.addWidget(label_data)
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
@@ -316,7 +350,6 @@ class MainWindow(QMainWindow):
         """
         self.serial_worker.is_killed = True
         self.serial_worker.killed()
-
 
 
 
