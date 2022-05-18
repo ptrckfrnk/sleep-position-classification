@@ -42,16 +42,46 @@
     *   \brief Address of the Control register 1
     */
     #define LIS3DH_CTRL_REG1 0x20
+    
+    /**
+    *   \brief Address of the Control register 5
+    */
+    #define LIS3DH_CTRL_REG5 0x24
+    
+    /**
+    *   \brief Address of the FIFO Control register
+    */
+    #define LIS3DH_FIFO_CTRL_REG 0x2E
+    
+    /**
+    *   \brief Address of the FIFO SRC register
+    */
+    #define LIS3DH_FIFO_SRC_REG 0x2F
 
     /**
     *   \brief Hex value to set normal mode to the accelerator
     */
-    #define LIS3DH_NORMAL_MODE_CTRL_REG1 0x27
+    #define LIS3DH_NORMAL_MODE_CTRL_REG1 0x47
+    
+    /**
+    *   \brief Hex value to enable FIFO to the accelerator
+    */
+    #define LIS3DH_FIFO_ENABLED_CTRL_REG5 0x40
+    
+    /**
+    *   \brief Hex value to set FIFO mode to the accelerator
+    */
+    #define LIS3DH_NORMAL_MODE_CTRL_REG5 0x40
+    
+    /**
+    *   \brief Hex value to set FIFO mode to the accelerator
+    */
+    #define LIS3DH_BYPASS_MODE 0x00
     
     /**
     *   \brief Hex value to set normal mode (powered off)
     **/
-    #define LIS3DH_NORMAL_MODE_OFF_CTRL_REG1 0x07
+    #define LIS3DH_FIFO_MODE_CTRL_REG_MODE 0x40
 
     /**
     *   \brief  Address of the Temperature Sensor Configuration register
