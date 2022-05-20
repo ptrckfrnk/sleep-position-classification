@@ -94,33 +94,8 @@ class SerialWorker(QRunnable):
                 if self.port.is_open:
                     CONN_STATUS = True
                     self.signals.status.emit(self.port_name, 1)
+                    print("Successfully connected to port {}.".format(self.port_name))
                     time.sleep(0.01)
-
-                    # Initialize list for incoming data
-                    data = []
-
-                    # Sample for 18 minutes
-                    t_end = time.time() + 200
-
-                    print("Start sampling.")
-
-                    line = ''
-
-                    while time.time() < t_end:
-
-                        read = str(self.port.read())
-                        read = read[2]
-
-                        if (read != 'E'):
-                            line += read
-
-                        if (read == 'E'):
-                            print(line)
-                            line = ''
-
-                    print("End of sampling.")
-                    # Print data for debugging
-                    #print(data)
 
             except serial.SerialException:
                 logging.info("Error with port {}.".format(self.port_name))
@@ -136,43 +111,64 @@ class SerialWorker(QRunnable):
 
         if CONN_STATUS:
             try:
+                # Set button_start from "Start" to "Stop"
+                # button_start.setText("Stop")
+
                 # Initialize list for incoming data
                 data = []
 
                 # Sample for 18 minutes
-                t_end = time.time() + 18*60
+                t_end = time.time() + 10
+
+                print("Start sampling.")
+
+                line = ''
 
                 while time.time() < t_end:
-                    data.append(self.port.read())
+
+                    read = str(self.port.read())
+                    read = read[2]
+
+                    if (read != 'E'):
+                        line += read
+
+                    if (read == 'E'):
+                        print(line)
+                        line = ''
+
+                print("End of sampling.")
 
                 # Print data for debugging
-                print(data)
+                #print(data)
 
                 # Data transformation for better reading
                 # tbd
 
                 # data rows of csv file (for testing, delete later)
-                rows = [ ['0', '250', '250', '250', '0', '250'],
-                         ['2', '251', '245', '251', '5', '247'],
-                         ['4', '250', '247', '252', '7', '243']]
-
-                # Saving data as CSV file
-                labels = ['x1', 'y1', 'z1', 'x2', 'y2', 'z2']
-
-                with open('bluetooth_data.csv', 'w') as f:
-
-                    # using csv.writer method from CSV package
-                    write = csv.writer(f)
-
-                    write.writerow(labels)
-                    write.writerows(rows)
+                # rows = [ ['0', '250', '250', '250', '0', '250'],
+                #          ['2', '251', '245', '251', '5', '247'],
+                #          ['4', '250', '247', '252', '7', '243']]
+                #
+                # # Saving data as CSV file
+                # labels = ['x1', 'y1', 'z1', 'x2', 'y2', 'z2']
+                #
+                # with open('bluetooth_data.csv', 'w') as f:
+                #
+                #     # using csv.writer method from CSV package
+                #     write = csv.writer(f)
+                #
+                #     write.writerow(labels)
+                #     write.writerows(rows)
 
                 time.sleep(0.01)
 
-            except serial.SerialException:
+            except: # except serial.SerialException:
                 logging.info("Error with reading data from port {}.".format(self.port_name))
-                self.signals.status.emit(self.port_name, 0)
+                # self.signals.status.emit(self.port_name, 0)
                 time.sleep(0.01)
+
+        else:
+            print("Not connected to any port. Please first connect to a port.")
 
 
     @pyqtSlot()
@@ -216,9 +212,9 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
         # title and geometry
-        self.setWindowTitle("GUI")
+        self.setWindowTitle("Sleep Position Classification")
         width = 400
-        height = 320
+        height = 400
         self.setMinimumSize(width, height)
 
         # create thread handler
@@ -239,12 +235,11 @@ class MainWindow(QMainWindow):
         # Layout
         label_choose = QLabel('Choose port for reading:')
         label_sample = QLabel('Start sampling data (for 18 mins):')
-        button_start = QPushButton('Start')
 
-        button_start = QPushButton(
+        self.button_start = QPushButton(
             text=('Start'),
-            checkable=False, # check if this is the right way to do it
-            #toggled=self.on_toggle
+            checkable=True,
+            toggled=self.sample
         )
 
         label_data = QLabel('Accelerometer data:')
@@ -254,7 +249,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.com_list_widget)
         layout.addWidget(self.conn_btn)
         layout.addWidget(label_sample)
-        layout.addWidget(button_start)
+        layout.addWidget(self.button_start)
         layout.addWidget(label_data)
         widget = QWidget()
         widget.setLayout(layout)
@@ -266,7 +261,7 @@ class MainWindow(QMainWindow):
     ####################
     def serialscan(self):
         """!
-        @brief Scans all serial ports and create a list.
+        @brief Scans all serial ports and creates a list.
         """
         # create the combo box to host port list
         self.port_text = ""
@@ -344,6 +339,43 @@ class MainWindow(QMainWindow):
         logging.info("Port {} closed.".format(port_name))
 
 
+    @pyqtSlot(bool)
+    def sample(self, checked):
+        """!
+        @brief Samples data from the selected port.
+        """
+
+        if checked:
+            print("Sample if")
+
+            self.button_start.setText("Stop")
+
+            self.serial_worker.sample()
+
+
+            #self.threadpool.start(self.serial_worker)
+            # # setup reading worker
+            # self.serial_worker = SerialWorker(self.port_text) # needs to be re defined
+            # # connect worker signals to functions
+            # self.serial_worker.signals.status.connect(self.check_serialport_status)
+            # self.serial_worker.signals.device_port.connect(self.connected_device)
+            # # execute the worker
+            # self.threadpool.start(self.serial_worker)
+        else:
+            print("Sample else")
+
+            # self.serial_worker.is_killed = True
+            # self.serial_worker.killed()
+            # # kill thread
+            # self.serial_worker.is_killed = True
+            # self.serial_worker.killed()
+            # self.com_list_widget.setDisabled(False) # enable the possibility to change port
+            # self.conn_btn.setText(
+            #     "Connect to port {}".format(self.port_text)
+            # )
+
+
+
     def ExitHandler(self):
         """!
         @brief Kill every possible running thread upon exiting application.
@@ -360,8 +392,6 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = MainWindow()
 
-
     app.aboutToQuit.connect(w.ExitHandler)
     w.show()
-    # w.serial_worker.send('c')
     sys.exit(app.exec_())
