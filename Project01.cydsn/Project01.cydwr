@@ -253,16 +253,18 @@
     <Group key="Pin">
       <Data key="0f2ec5ac-262d-4f20-8286-38a024fe2dd4" value="SCL_Acc1" />
       <Data key="02f2cf2c-2c7a-49df-9246-7a3435c21be3" value="SCL" />
+      <Data key="7f5b67fc-cff0-43fa-b83d-4e3dcd79cef6" value="Rx_BT" />
       <Data key="53ce3520-b440-461c-92ac-41e4d1144d11" value="SCL_2" />
       <Data key="67f065a5-5356-4081-a29a-ff2e12e1bda6" value="SCL_1" />
       <Data key="84a7e550-cb49-4078-b9ab-16244e477533" value="SDA_1" />
       <Data key="241e01cc-eb4f-4ef0-8061-3c4d0350a5d3" value="SDA_2" />
       <Data key="22863ebe-a37b-476f-b252-6e49a8c00b12" value="SDA" />
+      <Data key="47347aea-e3c6-4eb7-8c36-c54e4e48453d" value="Tx_BT" />
       <Data key="359702c9-1daf-4700-b89a-0abafcb65e9f" value="Tx_1" />
-      <Data key="1425177d-0d0e-4468-8bcc-e638e5509a9b" value="Rx" />
+      <Data key="1425177d-0d0e-4468-8bcc-e638e5509a9b" value="Rx_Debug" />
       <Data key="b33a7c53-a4f2-4f3f-bbb4-f30f5c1fc780" value="Rx_1" />
       <Data key="c2ab98b7-fda4-471f-8802-9eba9b015182" value="SDA_Acc2" />
-      <Data key="ed092b9b-d398-4703-be89-cebf998501f6" value="Tx" />
+      <Data key="ed092b9b-d398-4703-be89-cebf998501f6" value="Tx_Debug" />
     </Group>
   </Group>
   <Group key="EEPROM">
@@ -3359,9 +3361,19 @@
         <Data key="Port Format" value="12,0" />
       </Group>
     </Group>
+    <Group key="7f5b67fc-cff0-43fa-b83d-4e3dcd79cef6">
+      <Group key="0">
+        <Data key="Port Format" value="0,6" />
+      </Group>
+    </Group>
     <Group key="22863ebe-a37b-476f-b252-6e49a8c00b12">
       <Group key="0">
         <Data key="Port Format" value="12,1" />
+      </Group>
+    </Group>
+    <Group key="47347aea-e3c6-4eb7-8c36-c54e4e48453d">
+      <Group key="0">
+        <Data key="Port Format" value="0,7" />
       </Group>
     </Group>
     <Group key="359702c9-1daf-4700-b89a-0abafcb65e9f">
