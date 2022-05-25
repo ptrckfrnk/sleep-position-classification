@@ -14,6 +14,8 @@ import sys
 import time
 import logging
 import csv
+# from datetime import date
+import datetime
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import (
@@ -136,11 +138,15 @@ class SerialWorker(QRunnable):
                     if (read != 'E'):
                         line += read
 
+                    # add error handling for when S is missing
+
                     if (read == 'E'):
-                        print(line)
+                        line = line[2:]
+                        data.append(line.split(','))
                         line = ''
 
                 print("End of sampling.")
+                print(data)
 
                 # Print data for debugging
                 #print(data)
@@ -153,16 +159,20 @@ class SerialWorker(QRunnable):
                 #          ['2', '251', '245', '251', '5', '247'],
                 #          ['4', '250', '247', '252', '7', '243']]
                 #
-                # # Saving data as CSV file
-                # labels = ['x1', 'y1', 'z1', 'x2', 'y2', 'z2']
-                #
-                # with open('bluetooth_data.csv', 'w') as f:
-                #
-                #     # using csv.writer method from CSV package
-                #     write = csv.writer(f)
-                #
-                #     write.writerow(labels)
-                #     write.writerows(rows)
+                # Saving data as CSV file
+                labels = ['x1', 'y1', 'z1', 'x2', 'y2', 'z2']
+
+                date = datetime.datetime.now()
+                date = date.strftime("%Y%m%d_%H%M%S")
+                csv_name = "bluetooth_data_{}.csv".format(date)
+
+                with open(csv_name, 'w') as f:
+
+                    # using csv.writer method from CSV package
+                    write = csv.writer(f)
+
+                    write.writerow(labels)
+                    write.writerows(data)
 
                 time.sleep(0.01)
 
