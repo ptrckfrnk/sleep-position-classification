@@ -124,9 +124,10 @@ class SerialWorker(QRunnable):
                 data = []
 
                 # Sample for 18 minutes
-                t_end = time.time() + 10
+                sampling_time = 2*60
+                t_end = time.time() + sampling_time
 
-                print("Start sampling.")
+                print("Start sampling for {} minutes.".format(sampling_time/60))
 
                 line = ''
 
@@ -141,24 +142,17 @@ class SerialWorker(QRunnable):
                     # add error handling for when S is missing
 
                     if (read == 'E'):
-                        line = line[2:]
-                        data.append(line.split(','))
-                        line = ''
+
+                        if (line[0] != 'S'):
+                            line = ''
+                            continue
+                        else:
+                            line = line[2:]
+                            data.append(line.split(','))
+                            line = ''
 
                 print("End of sampling.")
-                print(data)
 
-                # Print data for debugging
-                #print(data)
-
-                # Data transformation for better reading
-                # tbd
-
-                # data rows of csv file (for testing, delete later)
-                # rows = [ ['0', '250', '250', '250', '0', '250'],
-                #          ['2', '251', '245', '251', '5', '247'],
-                #          ['4', '250', '247', '252', '7', '243']]
-                #
                 # Saving data as CSV file
                 labels = ['x1', 'y1', 'z1', 'x2', 'y2', 'z2']
 
@@ -169,10 +163,12 @@ class SerialWorker(QRunnable):
                 with open(csv_name, 'w') as f:
 
                     # using csv.writer method from CSV package
-                    write = csv.writer(f)
-
+                    write = csv.writer(f, delimiter=',', lineterminator='\n')
                     write.writerow(labels)
                     write.writerows(data)
+
+
+                print("Data saved to file \'{}\'.".format(csv_name))
 
                 time.sleep(0.01)
 
