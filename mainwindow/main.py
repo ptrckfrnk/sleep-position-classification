@@ -123,38 +123,74 @@ class SerialWorker(QRunnable):
                 # Initialize list for incoming data
                 data = []
 
-                # Sample for 18 minutes
-                sampling_time = 2*60
-                t_end = time.time() + sampling_time
+                # Sample the 12 positions
+                for i in range(1,3):
+                    sampling_time = 5      # 1 minute of sampling for each position
+                    t_end = time.time() + sampling_time
+                    print("Start sampling position {} for {} minutes".format(i, int(sampling_time/60)))
 
-                print("Start sampling for {} minutes.".format(sampling_time/60))
+                    line = ''               
 
-                line = ''
+                    while time.time() < t_end:
+                        read = str(self.port.read())
+                        read = read[2]
 
-                while time.time() < t_end:
+                        if (read != 'E'):
+                            line += read
 
-                    read = str(self.port.read())
-                    read = read[2]
+                        # add error handling for when S is missing
 
-                    if (read != 'E'):
-                        line += read
+                        if (read == 'E'):
+                            if (line[0] != 'S'):
+                                line = ''
+                                continue
+                            else:
+                                line = line[2:-1]
+                                line += ',{}'.format(i)
+                                print(line)
+                                print(line.split(','))
+                                data.append(line.split(','))      # add the position label i 
+                                line = ''
 
-                    # add error handling for when S is missing
-
-                    if (read == 'E'):
-
-                        if (line[0] != 'S'):
-                            line = ''
+                    if i != 12:
+                        waiting_time = 5       # 15 seconds of waiting to change position
+                        t_end = time.time() + waiting_time
+                        print("Please change position during the next 15 seconds")
+                        while time.time() < t_end:
                             continue
-                        else:
-                            line = line[2:]
-                            data.append(line.split(','))
-                            line = ''
+
+                # Sample for 18 minutes
+                # sampling_time = 1*60
+                # t_end = time.time() + sampling_time
+
+                # print("Start sampling for {} minutes.".format(sampling_time/60))
+
+                # line = ''
+
+                # while time.time() < t_end:
+
+                #     read = str(self.port.read())
+                #     read = read[2]
+
+                #     if (read != 'E'):
+                #         line += read
+
+                #     # add error handling for when S is missing
+
+                #     if (read == 'E'):
+
+                #         if (line[0] != 'S'):
+                #             line = ''
+                #             continue
+                #         else:
+                #             line = line[2:]
+                #             data.append(line.split(','))
+                #             line = ''
 
                 print("End of sampling.")
 
                 # Saving data as CSV file
-                labels = ['x1', 'y1', 'z1', 'x2', 'y2', 'z2']
+                labels = ['x1', 'y1', 'z1', 'x2', 'y2', 'z2', 'position']
 
                 date = datetime.datetime.now()
                 date = date.strftime("%Y%m%d_%H%M%S")
