@@ -124,8 +124,8 @@ class SerialWorker(QRunnable):
                 data = []
 
                 # Sample the 12 positions
-                for i in range(1,3):
-                    sampling_time = 5      # 1 minute of sampling for each position
+                for i in range(1,13):
+                    sampling_time = 60      # 1 minute of sampling for each position
                     t_end = time.time() + sampling_time
                     print("Start sampling position {} for {} minutes".format(i, int(sampling_time/60)))
 
@@ -147,15 +147,13 @@ class SerialWorker(QRunnable):
                             else:
                                 line = line[2:-1]
                                 line += ',{}'.format(i)
-                                print(line)
-                                print(line.split(','))
                                 data.append(line.split(','))      # add the position label i 
                                 line = ''
 
                     if i != 12:
                         waiting_time = 5       # 15 seconds of waiting to change position
                         t_end = time.time() + waiting_time
-                        print("Please change position during the next 15 seconds")
+                        print("Please change position during the next {} seconds".format(waiting_time))
                         while time.time() < t_end:
                             continue
 
@@ -190,7 +188,7 @@ class SerialWorker(QRunnable):
                 print("End of sampling.")
 
                 # Saving data as CSV file
-                labels = ['x1', 'y1', 'z1', 'x2', 'y2', 'z2', 'position']
+                labels = ['x_chest', 'y_chest', 'z_chest', 'x_ankle', 'y_ankle', 'z_ankle', 'position']
 
                 date = datetime.datetime.now()
                 date = date.strftime("%Y%m%d_%H%M%S")
