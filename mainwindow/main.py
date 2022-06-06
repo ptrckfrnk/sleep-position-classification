@@ -20,6 +20,7 @@ import datetime
 from PyQt5 import QtCore
 from PyQt5.QtCore import (
     QObject,
+    QThread,
     QThreadPool,
     QRunnable,
     pyqtSignal,
@@ -67,6 +68,114 @@ class SerialWorkerSignals(QObject):
     status = pyqtSignal(str, int)
 
 
+#########################
+# SAMPLE_WORKER #
+#########################
+class SampleWorker(QObject):
+    """!
+    @brief Class that defines the functions available to a sampleworker.
+
+    Available signals (with respective inputs) are:
+        - device_port:
+            str --> port name to which a device is connected
+        - status:
+            str --> port name
+            int --> macro representing the state (0 - error during opening, 1 - success)
+    """
+    device_port = pyqtSignal(str)
+    status = pyqtSignal(str, int)
+
+    """!
+    @brief Main class for serial communication: handles connection with device.
+    """
+    def __init__(self, serial_port_name):
+        """!
+        @brief Init worker.
+        """
+        self.is_killed = False
+        super().__init__()
+        # init port, params and signals
+        self.port = serial.Serial()
+        self.port_name = serial_port_name
+        self.baudrate = 9600 # hard coded but can be a global variable, or an input param
+        self.signals = SerialWorkerSignals()
+
+    @pyqtSlot()
+    def run(self):
+        """!
+        @brief Sample data from desired serial port
+        """
+
+        if CONN_STATUS:
+            try:
+                # Set button_start from "Start" to "Stop"
+                # button_start.setText("Stop")
+
+                # Initialize list for incoming data
+                data = []
+
+                # Sample the 12 positions
+                for i in range(1,13):
+                    sampling_time = 60      # 1 minute of sampling for each position
+                    t_end = time.time() + sampling_time
+                    logging.info("Start sampling position {} for {} minutes".format(i, int(sampling_time/60)))
+
+                    line = ''
+
+                    while time.time() < t_end:
+                        read = str(self.port.read())
+                        read = read[2]
+
+                        if (read != 'E'):
+                            line += read
+
+
+                        if (read == 'E'):
+                            if (line[0] != 'S'):
+                                line = ''
+                                continue
+                            else:
+                                line = line[2:-1]
+                                line += ',{}'.format(i)
+                                data.append(line.split(','))
+                                line = ''
+
+                    if i != 12:
+                        waiting_time = 5       # 15 seconds of waiting to change position
+                        logging.info("Please change position during the next {} seconds".format(waiting_time))
+                        time.sleep(waiting_time)
+
+
+                logging.info("End of sampling.")
+
+                # Saving data as CSV file
+                labels = ['x_chest', 'y_chest', 'z_chest', 'x_ankle', 'y_ankle', 'z_ankle', 'position']
+
+                date = datetime.datetime.now()
+                date = date.strftime("%Y%m%d_%H%M%S")
+                csv_name = "bluetooth_data_{}.csv".format(date)
+
+                with open(csv_name, 'w') as f:
+
+                    # using csv.writer method from CSV package
+                    write = csv.writer(f, delimiter=',', lineterminator='\n')
+                    write.writerow(labels)
+                    write.writerows(data)
+
+
+                logging.info("Data saved to file \'{}\'.".format(csv_name))
+
+                time.sleep(0.01)
+
+            except: # except serial.SerialException:
+                logging.info("Error with reading data from port {}.".format(self.port_name))
+                # self.signals.status.emit(self.port_name, 0)
+                time.sleep(0.01)
+
+        else:
+            logging.info("Not connected to any port. Please first connect to a port.")
+
+
 #################
 # SERIAL_WORKER #
 #################
@@ -100,7 +209,7 @@ class SerialWorker(QRunnable):
                 if self.port.is_open:
                     CONN_STATUS = True
                     self.signals.status.emit(self.port_name, 1)
-                    print("Successfully connected to port {}.".format(self.port_name))
+                    logging.info(f"Successfully connected to port {self.port_name}.")
                     time.sleep(0.01)
 
             except serial.SerialException:
@@ -109,110 +218,80 @@ class SerialWorker(QRunnable):
                 time.sleep(0.01)
 
 
-    @pyqtSlot()
-    def sample(self):
-        """!
-        @brief Sample data from desired serial port
-        """
-
-        if CONN_STATUS:
-            try:
-                # Set button_start from "Start" to "Stop"
-                # button_start.setText("Stop")
-
-                # Initialize list for incoming data
-                data = []
-
-                # Sample the 12 positions
-                for i in range(1,13):
-                    sampling_time = 60      # 1 minute of sampling for each position
-                    t_end = time.time() + sampling_time
-                    print("Start sampling position {} for {} minutes".format(i, int(sampling_time/60)))
-
-                    line = ''               
-
-                    while time.time() < t_end:
-                        read = str(self.port.read())
-                        read = read[2]
-
-                        if (read != 'E'):
-                            line += read
-
-                        # add error handling for when S is missing
-
-                        if (read == 'E'):
-                            if (line[0] != 'S'):
-                                line = ''
-                                continue
-                            else:
-                                line = line[2:-1]
-                                line += ',{}'.format(i)
-                                data.append(line.split(','))      # add the position label i 
-                                line = ''
-
-                    if i != 12:
-                        waiting_time = 5       # 15 seconds of waiting to change position
-                        t_end = time.time() + waiting_time
-                        print("Please change position during the next {} seconds".format(waiting_time))
-                        while time.time() < t_end:
-                            continue
-
-                # Sample for 18 minutes
-                # sampling_time = 1*60
-                # t_end = time.time() + sampling_time
-
-                # print("Start sampling for {} minutes.".format(sampling_time/60))
-
-                # line = ''
-
-                # while time.time() < t_end:
-
-                #     read = str(self.port.read())
-                #     read = read[2]
-
-                #     if (read != 'E'):
-                #         line += read
-
-                #     # add error handling for when S is missing
-
-                #     if (read == 'E'):
-
-                #         if (line[0] != 'S'):
-                #             line = ''
-                #             continue
-                #         else:
-                #             line = line[2:]
-                #             data.append(line.split(','))
-                #             line = ''
-
-                print("End of sampling.")
-
-                # Saving data as CSV file
-                labels = ['x_chest', 'y_chest', 'z_chest', 'x_ankle', 'y_ankle', 'z_ankle', 'position']
-
-                date = datetime.datetime.now()
-                date = date.strftime("%Y%m%d_%H%M%S")
-                csv_name = "bluetooth_data_{}.csv".format(date)
-
-                with open(csv_name, 'w') as f:
-
-                    # using csv.writer method from CSV package
-                    write = csv.writer(f, delimiter=',', lineterminator='\n')
-                    write.writerow(labels)
-                    write.writerows(data)
-
-
-                print("Data saved to file \'{}\'.".format(csv_name))
-
-                time.sleep(0.01)
-
-            except: # except serial.SerialException:
-                logging.info("Error with reading data from port {}.".format(self.port_name))
-                # self.signals.status.emit(self.port_name, 0)
-                time.sleep(0.01)
-
-        else:
-            print("Not connected to any port. Please first connect to a port.")
+    # @pyqtSlot()
+    # def sample(self):
+    #     """!
+    #     @brief Sample data from desired serial port
+    #     """
+    #
+    #     if CONN_STATUS:
+    #         try:
+    #             # Set button_start from "Start" to "Stop"
+    #             # button_start.setText("Stop")
+    #
+    #             # Initialize list for incoming data
+    #             data = []
+    #
+    #             # Sample the 12 positions
+    #             for i in range(1,13):
+    #                 sampling_time = 60      # 1 minute of sampling for each position
+    #                 t_end = time.time() + sampling_time
+    #                 logging.info("Start sampling position {} for {} minutes".format(i, int(sampling_time/60)))
+    #
+    #                 line = ''
+    #
+    #                 while time.time() < t_end:
+    #                     read = str(self.port.read())
+    #                     read = read[2]
+    #
+    #                     if (read != 'E'):
+    #                         line += read
+    #
+    #
+    #                     if (read == 'E'):
+    #                         if (line[0] != 'S'):
+    #                             line = ''
+    #                             continue
+    #                         else:
+    #                             line = line[2:-1]
+    #                             line += ',{}'.format(i)
+    #                             data.append(line.split(','))
+    #                             line = ''
+    #
+    #                 if i != 12:
+    #                     waiting_time = 5       # 15 seconds of waiting to change position
+    #                     logging.info("Please change position during the next {} seconds".format(waiting_time))
+    #                     time.sleep(waiting_time)
+    #
+    #
+    #             logging.info("End of sampling.")
+    #
+    #             # Saving data as CSV file
+    #             labels = ['x_chest', 'y_chest', 'z_chest', 'x_ankle', 'y_ankle', 'z_ankle', 'position']
+    #
+    #             date = datetime.datetime.now()
+    #             date = date.strftime("%Y%m%d_%H%M%S")
+    #             csv_name = "bluetooth_data_{}.csv".format(date)
+    #
+    #             with open(csv_name, 'w') as f:
+    #
+    #                 # using csv.writer method from CSV package
+    #                 write = csv.writer(f, delimiter=',', lineterminator='\n')
+    #                 write.writerow(labels)
+    #                 write.writerows(data)
+    #
+    #
+    #             logging.info("Data saved to file \'{}\'.".format(csv_name))
+    #
+    #             time.sleep(0.01)
+    #
+    #         except: # except serial.SerialException:
+    #             logging.info("Error with reading data from port {}.".format(self.port_name))
+    #             # self.signals.status.emit(self.port_name, 0)
+    #             time.sleep(0.01)
+    #
+    #     else:
+    #         logging.info("Not connected to any port. Please first connect to a port.")
 
 
     @pyqtSlot()
@@ -283,7 +362,7 @@ class MainWindow(QMainWindow):
         self.button_start = QPushButton(
             text=('Start'),
             checkable=True,
-            toggled=self.sample
+            toggled=self.start_sample
         )
 
         label_data = QLabel('Accelerometer data:')
@@ -292,8 +371,10 @@ class MainWindow(QMainWindow):
         layout.addWidget(label_choose)
         layout.addWidget(self.com_list_widget)
         layout.addWidget(self.conn_btn)
+        layout.addStretch()
         layout.addWidget(label_sample)
         layout.addWidget(self.button_start)
+        layout.addStretch()
         layout.addWidget(label_data)
         widget = QWidget()
         widget.setLayout(layout)
@@ -384,17 +465,35 @@ class MainWindow(QMainWindow):
 
 
     @pyqtSlot(bool)
-    def sample(self, checked):
+    def start_sample(self, checked):
         """!
         @brief Samples data from the selected port.
         """
 
         if checked:
-            print("Sample if")
+            logging.info("Sample if")
 
             self.button_start.setText("Stop")
 
-            self.serial_worker.sample()
+            self.thread = QThread()
+            self.worker = SampleWorker(None)
+            self.worker.moveToThread(self.thread)
+
+            self.thread.started.connect(self.worker.run)
+            # self.worker.finished.connect(self.thread.quit)
+            # self.worker.finished.connect(self.worker.deleteLater)
+            # self.thread.finished.connect(self.thread.deleteLater)
+
+            self.thread.start()
+
+
+
+            # not working yet
+
+
+
+
+            # self.serial_worker.sample()
 
 
             #self.threadpool.start(self.serial_worker)
@@ -406,7 +505,7 @@ class MainWindow(QMainWindow):
             # # execute the worker
             # self.threadpool.start(self.serial_worker)
         else:
-            print("Sample else")
+            logging.info("Sample else")
 
             # self.serial_worker.is_killed = True
             # self.serial_worker.killed()
