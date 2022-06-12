@@ -191,7 +191,7 @@ class SerialWorker(QRunnable):
 
                 date = datetime.datetime.now()
                 date = date.strftime("%Y%m%d_%H%M%S")
-                csv_name = "massimo_{}.csv".format(date)
+                csv_name = "lilian_{}.csv".format(date)
 
                 with open(csv_name, 'w') as f:
 
