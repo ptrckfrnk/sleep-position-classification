@@ -147,8 +147,10 @@ class SerialWorker(QRunnable):
                                 line = line[2:-1]
                                 line += ',{}'.format(i)
                                 data.append(line.split(','))      # add the position label i 
+                                print(line.split(','))
                                 line = ''
 
+                    
                     if i != 12:
                         waiting_time = 20       # 20 seconds of waiting to change position
                         t_end = time.time() + waiting_time
@@ -256,9 +258,9 @@ class MainWindow(QMainWindow):
 
         # title and geometry
         self.setWindowTitle("Sleep Position Classification")
-        width = 400
-        height = 400
-        self.setMinimumSize(width, height)
+        width = 1280
+        height = 720
+        # self.setMinimumSize(width, height)
 
         # create thread handler
         self.threadpool = QThreadPool()
@@ -277,7 +279,7 @@ class MainWindow(QMainWindow):
         """
         # Layout
         label_choose = QLabel('Choose port for reading:')
-        label_sample = QLabel('Start sampling data (for 18 mins):')
+        label_sample = QLabel('Start sampling data (for 15 min.):')
 
         self.button_start = QPushButton(
             text=('Start'),
@@ -336,6 +338,7 @@ class MainWindow(QMainWindow):
         self.port_text = self.com_list_widget.currentText()
         self.conn_btn.setText("Connect to port {}".format(self.port_text))
 
+
     @pyqtSlot(bool)
     def on_toggle(self, checked):
         """!
@@ -388,7 +391,6 @@ class MainWindow(QMainWindow):
         """
 
         if checked:
-            print("Sample if")
 
             self.button_start.setText("Stop")
 
@@ -403,8 +405,7 @@ class MainWindow(QMainWindow):
             # self.serial_worker.signals.device_port.connect(self.connected_device)
             # # execute the worker
             # self.threadpool.start(self.serial_worker)
-        else:
-            print("Sample else")
+        # else:
 
             # self.serial_worker.is_killed = True
             # self.serial_worker.killed()
@@ -424,7 +425,6 @@ class MainWindow(QMainWindow):
         """
         self.serial_worker.is_killed = True
         self.serial_worker.killed()
-
 
 
 #############
