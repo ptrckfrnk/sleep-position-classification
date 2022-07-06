@@ -1,14 +1,13 @@
 /* ===============================================
  *
  * Alfonso Massimo, Canavate Chloé, Franke Patrick
- * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
+ * Projet 05 - Sleep Position Classifier
+ * Electronic Technologies and Biosensor Laboratory
+ * Academic year 2021 - 2022
+ * main.c file
  *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
- *
- * ===============================================
-*/
+ * =============================================== */
+
 
 #include <stdio.h>
 #include "project.h"
@@ -22,9 +21,9 @@ int main(void)
     I2C_Peripheral_Start();
     UART_BT_Start();
 
-    CyDelay(5); //"The boot procedure is complete about 5 ms after device power-up."
+    CyDelay(5); // The boot procedure is complete about 5 ms after device power-up.
 
-    // Bluetooth Communication Check
+    // Bluetooth communication check
     UART_BT_PutString("UART BT: Communication started.\r\n");
 
     
@@ -280,6 +279,7 @@ int main(void)
             uint8_t OVRN_FIFO_2 = (fifo_full_2 & 0x40) >> 6;
             uint8_t OVRN_FIFO_1 = (fifo_full_1 & 0x40) >> 6;
             
+            // Check if the FIFO of both accelerometers are full
             if (OVRN_FIFO_1 == 0x01 && OVRN_FIFO_2 == 0x01)
             {
                 I2C_Peripheral_ReadRegisterMulti(LIS3DH_2_DEVICE_ADDRESS,
@@ -292,9 +292,12 @@ int main(void)
                                                  register_count,
                                                  Acc1_data);
                 
+                // Accelerometer 1 (0x18)
                 int16_t x1 = 0;
                 int16_t y1 = 0;
                 int16_t z1 = 0;
+                
+                // Empty and store the 32 samples of the FIFO
                 for (int i = 0; i < 32; i++)
                 {
                     x1 += (int16)(Acc1_data[i*6] | (Acc1_data[i*6+1] << 8)) >> 6;
@@ -302,13 +305,17 @@ int main(void)
                     z1 += (int16)(Acc1_data[i*6+4] | (Acc1_data[i*6+5] << 8)) >> 6;
                 }
                 
+                // Compute the mean
                 int16_t x1_mean = x1 / 32;
                 int16_t y1_mean = y1 / 32;
                 int16_t z1_mean = z1 / 32;
                 
+                // Accelerometer 2 (0x19)
                 int16_t x2 = 0;
                 int16_t y2 = 0;
                 int16_t z2 = 0;
+                
+                // Empty and store the 32 samples of the FIFO
                 for (int i = 0; i < 32; i++)
                 {
                     x2 += (int16)(Acc2_data[i*6] | (Acc2_data[i*6+1] << 8)) >> 6;
@@ -316,18 +323,19 @@ int main(void)
                     z2 += (int16)(Acc2_data[i*6+4] | (Acc2_data[i*6+5] << 8)) >> 6;
                 }
                 
+                // Compute the mean
                 int16_t x2_mean = x2 / 32;
                 int16_t y2_mean = y2 / 32;
                 int16_t z2_mean = z2 / 32;
                 
+                // Send message to BT module containing start (S) and end (E) characterers, along with the 6 acc means
                 sprintf(message, "S %d,%d,%d,%d,%d,%d E", x1_mean, y1_mean, z1_mean, x2_mean, y2_mean, z2_mean);
                 UART_BT_PutString(message);
-//                sprintf(message, "Accelerometer 2: x2_mean = %d, y2_mean = %d, z2_mean = %d \r\n\n", x2_mean, y2_mean, z2_mean);
-//                UART_BT_PutString(message);
                 
                 
                 CyDelay(200);
                 
+                // Bypass mode followed by FIFO mode to reset the FIFO
                 error_acc2 = I2C_Peripheral_WriteRegister(LIS3DH_2_DEVICE_ADDRESS,
                                                           LIS3DH_FIFO_CTRL_REG,
                                                           LIS3DH_BYPASS_MODE);

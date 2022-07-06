@@ -1,14 +1,14 @@
-/* ========================================
+/* ===============================================
  *
- * Copyright YOUR COMPANY, THE YEAR
- * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
+ * Alfonso Massimo, Canavate Chloé, Franke Patrick
+ * Projet 05 - Sleep Position Classifier
+ * Electronic Technologies and Biosensor Laboratory
+ * Academic year 2021 - 2022
+ * cyapicallbacks.h file
  *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
- *
- * ========================================
-*/
+ * =============================================== */
+
+
 #ifndef CYAPICALLBACKS_H
 #define CYAPICALLBACKS_H
     

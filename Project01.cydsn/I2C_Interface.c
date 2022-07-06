@@ -1,9 +1,15 @@
-/*
-* This file includes all the required source code to interface
-* the I2C peripheral.
-*
-* This file needs to be completed.
-*/
+/* ===============================================
+ *
+ * Alfonso Massimo, Canavate Chloé, Franke Patrick
+ * Projet 05 - Sleep Position Classifier
+ * Electronic Technologies and Biosensor Laboratory
+ * Academic year 2021 - 2022
+ * I2C_Interface.c file
+ * \brief This file includes all the required source
+ * code to interface the I2C peripheral
+ *
+ * =============================================== */
+
 
 /**
 *   \brief Value returned if device present on I2C bus.

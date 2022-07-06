@@ -1,14 +1,13 @@
-/* ========================================
+/* ===============================================
  *
- * Copyright YOUR COMPANY, THE YEAR
- * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
+ * Alfonso Massimo, Canavate Chloé, Franke Patrick
+ * Projet 05 - Sleep Position Classifier
+ * Electronic Technologies and Biosensor Laboratory
+ * Academic year 2021 - 2022
+ * LIS3DH.h file
+ * \brief Addresses and Hex value settings
  *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
- *
- * ========================================
-*/
+ * =============================================== */
 
 #ifndef __LIS3DH_H
     #define __LIS3DH_H
@@ -82,33 +81,10 @@
     *   \brief Hex value to set normal mode (powered off)
     **/
     #define LIS3DH_FIFO_MODE_CTRL_REG_MODE 0x40
-
+ 
     /**
-    *   \brief  Address of the Temperature Sensor Configuration register
-    */
-    #define LIS3DH_TEMP_CFG_REG 0x1F 
-
-    #define LIS3DH_TEMP_CFG_REG_ACTIVE 0xC0
-   
-    /////////////////////////////////////////////////
-    //EX.3
-    
-    // Brief Address of CTRL REG 4
-    #define LIS3DH_CTRL_REG4 0x23
-        
-    // brief Block Data Update (BDU) Flag
-    
-    #define LIS3DH_CTRL_REG4_BDU_ACTIVE 0x80
-
-    // Brief Address of the ADC output LSB register
-    
-    #define LIS3DH_OUT_ADC_3L 0x0C
-
-    // Brief Address of the ADC output MSB register
-    
-    #define LIS3DH_OUT_ADC_3H 0x0D
-    ////////////////////////////////////////////////
-    
+    *   \brief Addresses of the accelerometers' low and high bits for X, Y and Z coordinates
+    **/
     #define LIS3DH_OUT_X_L 0x28
     
     #define LIS3DH_OUT_X_H 0x29

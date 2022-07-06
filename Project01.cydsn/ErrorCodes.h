@@ -1,13 +1,14 @@
-/**
-*   \file ErrorCodes.h
-*   \brief Error codes definition.
-*   
-*   This file contains several definition of error codes to be used throughout
-*   the project to be consisted with the written firmware.
-*
-*   \author Davide Marzorati
-*   \date September 12, 2019
-*/
+/* ===============================================
+ *
+ * Alfonso Massimo, Canavate Chloé, Franke Patrick
+ * Projet 05 - Sleep Position Classifier
+ * Electronic Technologies and Biosensor Laboratory
+ * Academic year 2021 - 2022
+ * ErrorCodes.h file
+ * \brief Error codes definition
+ *
+ * =============================================== */
+
 
 /**
 *   \brief Error codes.

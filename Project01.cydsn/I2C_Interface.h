@@ -1,14 +1,14 @@
-/** 
- * \file I2C_Interface.h
- * \brief Hardware specific I2C interface.
+/* ===============================================
  *
- * This is an interface to the I2C peripheral. If you need to port 
- * this C-code to another platform, you could simply replace this
- * interface and still use the code.
+ * Alfonso Massimo, Canavate Chloé, Franke Patrick
+ * Projet 05 - Sleep Position Classifier
+ * Electronic Technologies and Biosensor Laboratory
+ * Academic year 2021 - 2022
+ * I2C_Interface.h file
+ * \brief Hardware specific I2C interface
  *
- * \author Davide Marzorati
- * \date September 12, 2019
-*/
+ * =============================================== */
+
 
 #ifndef __I2C_Interface_H
     #define __I2C_Interface_H
