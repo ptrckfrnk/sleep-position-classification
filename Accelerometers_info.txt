@@ -1,0 +1,5 @@
+Accelerometer 01 - Address 0x18 - Chest
+Accelerometer 02 - Address 0x19 - Ankle
+
+Ankle accelerometer has a black scotch mark, SD0 pin needs to be connected to Vin
+Chest accelerometer SD0 pin needs to be connected to Gnd
