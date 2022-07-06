@@ -1,3 +1,4 @@
+# Import libraries
 import sys
 import time
 import logging
@@ -10,7 +11,6 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import * 
 from PyQt5.QtCore import *
 
-# We import library dedicated to data plot
 import pyqtgraph as pg
 from pyqtgraph import PlotWidget
 
@@ -18,29 +18,27 @@ import serial
 import serial.tools.list_ports
 
 
-#Global
+# Variables
+# Global
 CONN_STATUS = False
-
 baudRate = 9600 
+flatLine = np.full(100,0,dtype=np.int16)
 
-xChestData = np.full(100,0,dtype=np.int16)
-yChestData = np.full(100,0,dtype=np.int16)
-zChestData = np.full(100,0,dtype=np.int16)
-xAnkleData = np.full(100,0,dtype=np.int16)
-yAnkleData = np.full(100,0,dtype=np.int16)
-zAnkleData = np.full(100,0,dtype=np.int16)
 
-data = []
+clock = list(range(100))    # Time data points
 
-clock = list(range(100)) 
+data = []                   # Initialize dataset for csv creation
 
-flag_transition = 0
-saved = 0
+# Flags 
+flag_transition = 0         # For transition between position
+saved = 0                   # For csv saving operation done
 
+# Names of the positions in the order of protocol sampling
 position_names = ['supine straight', 'supine left', 'supine right', 'prone straight', 'prone left', 'prone right', 'left straight', 'left bent leg', 'left fetal', 'right straight', 'right bent leg', 'right fetal']
 
 # Logging config
 logging.basicConfig(format="%(message)s", level=logging.INFO)
+
 
 
 #########################
@@ -74,10 +72,10 @@ class SerialWorker(QRunnable):
         global baudRate
         self.is_killed = False
         super().__init__()
-        # init port, params and signals
+        # Init port, params and signals
         self.port = serial.Serial()
         self.port_name = serial_port_name
-        self.baudrate = baudRate #hard coded but can be a global variable, or an input param
+        self.baudrate = baudRate # Hard coded but can be a global variable, or an input param
         self.signals = SerialWorkerSignals()
 
     @pyqtSlot()
@@ -105,35 +103,34 @@ class SerialWorker(QRunnable):
 
     @pyqtSlot()
     def readData(self):
-
+        """!
+        @brief Read data from desired serial port from start (S) to end (E) tokens
+        """
         global line
 
-        """!
-        @brief Read data from desired serial port
-        """
-        line = ''
+        line = ''   # Initialize line containing X, Y, Z of the 2 accelerometers
         flag = 0
 
         if CONN_STATUS:
             try:
-                while flag != 1:
+                while flag != 1:    # While E (end) is not read
                     read = str(self.port.read())
                     read = read[2]
                     if (read != 'E'):
                         line += read
 
                     if (read == 'E'):
-                        if (line[0] != 'S'):
+                        # If S not the 1st element of the line (compromised reading), reinitialize line
+                        if (line[0] != 'S'):    
                             line = ''
                         else:
                             flag = 1
-                            line = line[2:-1]
+                            line = line[2:-1]   # Remove S and E from the line
                             line = line.split(',')
                             time.sleep(1)
 
-            except: # except serial.SerialException:
+            except: # Except serial.SerialException:
                 logging.info("Error with reading data from port {}.".format(self.port_name))
-                # self.signals.status.emit(self.port_name, 0)
                 time.sleep(0.01)
 
         else:
@@ -142,7 +139,10 @@ class SerialWorker(QRunnable):
 
     @pyqtSlot()
     def storeData(self, clicked_date):
-
+        """!
+        @brief Store iteratively read lines in data object
+               And save them at the end of the protocol in a csv file
+        """
         global line, data, old_position_idx, flag_transition, beginning_transition, saved, position_idx
 
         current_date = datetime.datetime.now()
@@ -372,14 +372,14 @@ class MainWindow(QMainWindow):
         """!
              @brief Draw the plots.
         """
-        global xChestData, yChestData, zChestData, xAnkleData, yAnkleData, zAnkleData
+        global flatLine
 
-        self.dataXChest = self.plot(self.graphWidget, clock, xChestData, 'x-axis chest', 'b2cdb7')
-        self.dataYChest = self.plot(self.graphWidget, clock, yChestData, 'y-axis chest', '8ba590')
-        self.dataZChest = self.plot(self.graphWidget, clock, zChestData, 'z-axis chest', '5d7261')
-        self.dataXAnkle = self.plot(self.graphWidget, clock, xAnkleData, 'x-axis ankle', 'ffbe59')
-        self.dataYAnkle = self.plot(self.graphWidget, clock, yAnkleData, 'y-axis ankle', 'orange')
-        self.dataZAnkle = self.plot(self.graphWidget, clock, zAnkleData, 'z-axis ankle', 'c18932')
+        self.dataXChest = self.plot(self.graphWidget, clock, flatLine, 'x-axis chest', 'b2cdb7')
+        self.dataYChest = self.plot(self.graphWidget, clock, flatLine, 'y-axis chest', '8ba590')
+        self.dataZChest = self.plot(self.graphWidget, clock, flatLine, 'z-axis chest', '5d7261')
+        self.dataXAnkle = self.plot(self.graphWidget, clock, flatLine, 'x-axis ankle', 'ffbe59')
+        self.dataYAnkle = self.plot(self.graphWidget, clock, flatLine, 'y-axis ankle', 'orange')
+        self.dataZAnkle = self.plot(self.graphWidget, clock, flatLine, 'z-axis ankle', 'c18932')
 
     
     def plot(self, graph, x, y, curve_name, color):
