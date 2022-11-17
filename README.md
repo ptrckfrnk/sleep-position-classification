@@ -1,3 +1,27 @@
+- [Electronic Technologies and Biosensors Laboratory](#electronic-technologies-and-biosensors-laboratory)
+  * [Academic Year 2021/2022 - II Semester](#academic-year-2021-2022---ii-semester)
+  * [Final Project - Project 5 - Sleep position classifier](#final-project---project-5---sleep-position-classifier)
+  * [Objective](#objective)
+    + [Hardware](#hardware)
+    + [PSoC code](#psoc-code)
+    + [GUI code](#gui-code)
+      - [$Serial$ $interface$](#-serial---interface-)
+      - [$Serial$ $Worker$](#-serial---worker-)
+      - [$Graphic$ $interface$](#-graphic---interface-)
+      - [$Main$](#-main-)
+    + [Machine Learning](#machine-learning)
+      - [$Install$](#-install-)
+      - [$Data$](#-data-)
+      - [$Data Preprocessing$](#-data-preprocessing-)
+      - [$Data Visualization$](#-data-visualization-)
+      - [$Features$](#-features-)
+      - [$Target Variable$](#-target-variable-)
+        * [$Run$](#-run-)
+      - [$Master Position$](#-master-position-)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
+
 # Electronic Technologies and Biosensors Laboratory
 
 ## Academic Year 2021/2022 - II Semester
